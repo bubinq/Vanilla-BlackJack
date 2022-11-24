@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackJack</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <div id="cards">
+        <img id="source" src="https://i.pinimg.com/originals/dc/09/f2/dc09f23b1c1f5ba66efe769edc04f5e3.png" />
+    </div>
+    <div id="count">
+        <span></span>
+    </div>
+    <div id="gameWrapper">
+        <h1 id="dealerScore">Dealer: </h1>
+        <div id="dealerCards">
+        </div>
+        <h1 id="playerScore">Player: </h1>
+        <div id="playerCards">
+        </div>
+        <div>
+            <button class="buttons" id="hit">Hit</button>
+            <button class="buttons" id="stand">Stand</button>
+        </div>
+    </div>
+
+    <button id="drawBtn">Deal Cards</button>
+    <script src="./main.js"></script>
+</body>
+
+</html>

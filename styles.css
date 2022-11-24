@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+#gameWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+#dealerCards {
+  display: flex;
+  margin: 5px;
+}
+.enemyCard {
+  margin: 5px;
+  caret-color: transparent;
+}
+#playerCards {
+  display: flex;
+  margin: 5px;
+}
+.playerCard {
+  margin: 5px;
+  caret-color: transparent;
+}
+#playerScore {
+  display: none;
+}
+#dealerScore {
+  display: none;
+}
+img {
+  height: 217px;
+  width: 140px;
+}
+.buttons {
+  display: none;
+  border: none;
+  text-transform: uppercase;
+  margin: 10px;
+  font-size: 1.5em;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  background: black;
+  cursor: pointer;
+  box-shadow: 3px 7px 21px 4px rgba(0, 0, 0, 0.75);
+  transition: all ease 0.3s;
+  caret-color: transparent;
+}
+.buttons:hover {
+  background: white;
+  color: black;
+}
+#count {
+  position: absolute;
+  top: 3%;
+  right: 10%;
+  font-size: 1.5em;
+}
+#cards {
+  position: absolute;
+  top: 32%;
+  left: 80%;
+  caret-color: transparent;
+}
+#drawBtn {
+  position: absolute;
+  top: 20%;
+  left: 78.5%;
+  border: none;
+  text-transform: uppercase;
+  font-size: 1.5em;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  background: black;
+  cursor: pointer;
+  box-shadow: 3px 7px 21px 4px rgba(0, 0, 0, 0.75);
+  transition: all ease 0.3s;
+  caret-color: transparent;
+}
+#drawBtn:hover {
+  background: white;
+  color: black;
+}
+.animateDealer {
+  position: relative;
+  animation-name: dealer;
+  animation-duration: 0.5s;
+}
+.animatePlayer {
+  position: relative;
+  animation-name: player;
+  animation-duration: 0.5s;
+}
+.turnCard {
+  position: relative;
+  animation-name: turn;
+  animation-duration: 0.5s;
+}
+
+@keyframes turn {
+    0% {
+        top: 0px;
+    }
+
+    50% {
+        top: -30px;
+        transform: scale(1.1);
+    }
+
+    100% {
+        top: 0px;
+        transform: scale(1);
+    }
+}
+@keyframes dealer {
+  0% {
+    left: 100%;
+    transform: rotate(120deg);
+  }
+  50% {
+    transform: rotate(90deg);
+  }
+  100% {
+    left: 0%;
+  }
+}
+
+@keyframes player {
+  0% {
+    left: 320px;
+    transform: rotate(120deg);
+  }
+  50% {
+    transform: rotate(90deg);
+  }
+  100% {
+    left: 0%;
+  }
+}
