@@ -8,6 +8,7 @@ const hitBtn = document.getElementById("hit");
 const standBtn = document.getElementById("stand");
 const dealerScore = document.getElementById("dealerScore");
 const playerScore = document.getElementById("playerScore");
+const newGame = document.getElementById("newGame");
 
 const suits = ["H", "D", "S", "C"];
 const values = [
@@ -75,6 +76,9 @@ count.textContent = `${deck.cards.length} cards`;
 btn.addEventListener("click", startDeal);
 hitBtn.addEventListener("click", playHit);
 standBtn.addEventListener("click", playStand);
+newGame.addEventListener("click", () => {
+  window.location.reload();
+});
 
 function startDeal() {
   playerScore.style.display = "block";
@@ -101,8 +105,9 @@ function dealCards(num, i) {
         dealerCards
       );
 
-      calcValue(lastCard, "dealer", "deal");
+      calcValue(lastCard, "dealer");
       dealer.hand.push(lastCard);
+      calcWinner("deal");
     }
   } else {
     createCard(
@@ -110,7 +115,7 @@ function dealCards(num, i) {
       `../cards/${lastCard.value}-${lastCard.suit}.png`,
       playerCards
     );
-    calcValue(lastCard, "player", "deal");
+    calcValue(lastCard, "player");
     player.hand.push(lastCard);
   }
 
@@ -122,6 +127,7 @@ function dealCards(num, i) {
   if (i === 3) {
     btns[0].style.display = "inline-block";
     btns[1].style.display = "inline-block";
+    calcWinner("deal");
   }
 }
 
@@ -133,12 +139,14 @@ function checkDealer() {
     `../cards/${lastCard.value}-${lastCard.suit}.png`,
     dealerCards
   );
-  calcValue(lastCard, "dealer", "stand");
+  calcValue(lastCard, "dealer");
   dealer.hand.push(lastCard);
   if (dealer.points < 17) {
     setTimeout(function () {
       checkDealer();
     }, 500);
+  } else {
+    calcWinner("stand");
   }
   count.textContent = `${deck.cards.length} cards`;
 }
@@ -151,18 +159,20 @@ function playHit() {
     `../cards/${lastCard.value}-${lastCard.suit}.png`,
     playerCards
   );
-  calcValue(lastCard, "player", "hit");
+  calcValue(lastCard, "player");
   player.hand.push(lastCard);
+  calcWinner("hit");
+
   count.textContent = `${deck.cards.length} cards`;
 }
 
 function playStand() {
   let unturnedCard = dealerCards.children[0];
   unturnedCard.classList.add("turnCard");
-  new Promise(function (resolve, reject) {
+  new Promise(function (resolve) {
     setTimeout(() => {
       unturnedCard.children[0].src = `../cards/${dealer.hand[0].value}-${dealer.hand[0].suit}.png`;
-      calcValue(dealer.hand[0], "dealer", "stand");
+      calcValue(dealer.hand[0], "dealer");
       resolve();
     }, 300);
   }).then(() => {
@@ -170,6 +180,8 @@ function playStand() {
       setTimeout(() => {
         checkDealer();
       }, 500);
+    } else {
+      calcWinner("stand");
     }
   });
 }
@@ -180,87 +192,104 @@ function showDealerHand() {
   unturnedCard.children[0].src = `../cards/${dealer.hand[0].value}-${dealer.hand[0].suit}.png`;
 }
 
+function hasWon(score, who, show) {
+  score.textContent = `${who}: WIN`;
+  newGame.style.display = "block";
+  btns[0].style.display = "none";
+  btns[1].style.display = "none";
+  if (show) {
+    showDealerHand();
+  }
+  return;
+}
+
 function calcWinner(place) {
   if (place === "deal") {
     if (player.points === 21) {
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+      hasWon(playerScore, "Player", true);
+    } else if (dealer.points === 21) {
+      hasWon(dealerScore, "Dealer", true);
     } else if (player.points > 21) {
-      dealerScore.textContent = `Dealer: WIN`;
-      showDealerHand()
+      hasWon(dealerScore, "Dealer", true);
     } else if (dealer.points > 21) {
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+      hasWon(playerScore, "Player", true);
     }
   } else if (place === "stand") {
-    if (player.points > 21) {
-      console.log("Player > 21");
-      dealerScore.textContent = `Dealer: WIN`;
-      showDealerHand()
-    } else if (dealer.points > 21) {
-      console.log("Dealer > 21");
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+    if (dealer.points > 21) {
+      hasWon(playerScore, "Player", false);
     } else if (player.points === 21) {
-      console.log("Player == 21");
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+      if (dealer.points === 21) {
+        playerScore.textContent = `Player: DRAW`;
+        dealerScore.textContent = `Dealer: DRAW`;
+        newGame.style.display = "block";
+      } else {
+        hasWon(playerScore, "Player", false);
+      }
     } else if (dealer.points === 21) {
-      console.log("Dealer == 21");
-      dealerScore.textContent = `Dealer: WIN`;
-      showDealerHand()
-    } else if (player.points >= dealer.points) {
-      console.log("Player > Dealer");
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+      hasWon(dealerScore, "Dealer", false);
+    } else if (player.points > dealer.points) {
+      hasWon(playerScore, "Player", false);
+    } else if (player.points === dealer.points) {
+      playerScore.textContent = `Player: DRAW`;
+      dealerScore.textContent = `Dealer: DRAW`;
+      newGame.style.display = "block";
     } else {
-      dealerScore.textContent = `Dealer: WIN`;
-      showDealerHand()
+      hasWon(dealerScore, "Dealer", false);
     }
   } else {
     if (player.points > 21) {
-      console.log("Hit?");
-      dealerScore.textContent = `Dealer: WIN`;
-      showDealerHand()
+      hasWon(dealerScore, "Dealer", true);
     } else if (player.points === 21) {
-      playerScore.textContent = `Player: WIN`;
-      showDealerHand()
+      hasWon(playerScore, "Player", true);
     }
   }
 }
 
-function calcValue(card, type, from) {
-  if (player.hasAce && player.points > 21) {
-    player.hasAce = false;
-    player.points -= 10;
-  }
-  if (dealer.hasAce && dealer.points > 21) {
-    dealer.hasAce = false;
-    dealer.points -= 10;
-  }
-  if (type === "player") {
-    if (!isNaN(card.value)) {
-      player.points += parseInt(card.value);
-    } else if (card.value === "A") {
-      player.hasAce = true;
-      player.points += 11;
+function checkAce(pts, obj) {
+  debugger;
+  if (obj.hasAce) {
+    if (obj.points + pts > 21) {
+      // 27
+      obj.hasAce = false;
+      obj.points -= 10;
+      obj.points += pts;
+    } else if (obj.points + pts === 21) {
+      obj.points += pts;
+      calcWinner("deal");
     } else {
-      player.points += 10;
+      obj.points += pts;
     }
   } else {
+    obj.points += pts;
+  }
+}
+
+function calcValue(card, type) {
+  if (type === "player") {
     if (!isNaN(card.value)) {
-      dealer.points += parseInt(card.value);
+      checkAce(parseInt(card.value), player);
+    } else if (card.value === "A") {
+      player.hasAce = true;
+      checkAce(11, player);
+    } else {
+      checkAce(10, player);
+    }
+  } else {
+    debugger;
+    if (!isNaN(card.value)) {
+      checkAce(parseInt(card.value), dealer);
     } else if (card.value === "A") {
       dealer.hasAce = true;
-      dealer.points += 11;
+      checkAce(11, dealer);
     } else {
-      dealer.points += 10;
+      checkAce(10, dealer);
     }
   }
+
   playerScore.textContent = `Player: ${player.points}`;
   dealerScore.textContent = `Dealer: ${dealer.points}`;
-  calcWinner(from);
 }
+
 function createCard(cls, imgSrc, parent) {
   let div = document.createElement("div");
   div.setAttribute("class", cls);
